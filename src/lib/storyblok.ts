@@ -5,6 +5,7 @@ import { apiPlugin, storyblokInit } from "@storyblok/react/rsc";
 import Navbar        from "@/storyblok-components/Navbar";
 import EventCard     from "@/storyblok-components/EventCard";
 import FiltersDrawer from "@/storyblok-components/FiltersDrawer";
+import Page          from "@/storyblok-components/Page";
 
 // storyblokInit RETURNS a getStoryblokApi function ➜ we re-export it
 export const getStoryblokApi = storyblokInit({
@@ -14,6 +15,7 @@ export const getStoryblokApi = storyblokInit({
     navbar: Navbar,
     event_card: EventCard,
     filters_drawer: FiltersDrawer,
+    page: Page,
   },
 });
 
