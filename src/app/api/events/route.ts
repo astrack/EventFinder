@@ -55,6 +55,12 @@ interface EnrichedEvent {
   tags: string[];
 }
 
+// Limit the number of OpenAI requests processed concurrently
+const MAX_CONCURRENT_OPENAI_REQUESTS = parseInt(
+  process.env.OPENAI_CONCURRENT_REQUESTS || '5',
+  10,
+);
+
 async function generateEventMetadata(event: FetchedEvent, openai: OpenAIApi) {
   const description = event.description?.text || event.description || '';
   const prompt = `Summarize this event in one sentence and provide a list of relevant tags.\nEvent: ${event.name?.text || event.name}\nDescription: ${description}`;
@@ -79,23 +85,32 @@ export async function GET() {
   const configuration = new Configuration({ apiKey: openaiKey });
   const openai = new OpenAIApi(configuration);
 
-  const enriched: EnrichedEvent[] = [];
-  for (const event of events as FetchedEvent[]) {
-    try {
-      const metadata = openaiKey ? await generateEventMetadata(event, openai) : { summary: '', tags: [] };
-      enriched.push({
-        id: event.id,
-        title: event.name?.text || event.name,
-        url: event.url,
-        start: event.start?.local || event.local_date,
-        venue: event.venue?.name || event._embedded?.venues?.[0]?.name || '',
-        summary: metadata.summary,
-        tags: metadata.tags,
-      });
-    } catch (err) {
-      console.error(err);
-    }
+  const metadataResults: { summary: string; tags: string[] }[] = [];
+  for (let i = 0; i < events.length; i += MAX_CONCURRENT_OPENAI_REQUESTS) {
+    const batch = (events as FetchedEvent[]).slice(i, i + MAX_CONCURRENT_OPENAI_REQUESTS);
+    const promises = batch.map(event =>
+      openaiKey ? generateEventMetadata(event, openai) : Promise.resolve({ summary: '', tags: [] }),
+    );
+    const results = await Promise.allSettled(promises);
+    results.forEach(result => {
+      if (result.status === 'fulfilled') {
+        metadataResults.push(result.value);
+      } else {
+        console.error(result.reason);
+        metadataResults.push({ summary: '', tags: [] });
+      }
+    });
   }
+
+  const enriched: EnrichedEvent[] = (events as FetchedEvent[]).map((event, index) => ({
+    id: event.id,
+    title: event.name?.text || event.name,
+    url: event.url,
+    start: event.start?.local || event.local_date,
+    venue: event.venue?.name || event._embedded?.venues?.[0]?.name || '',
+    summary: metadataResults[index]?.summary || '',
+    tags: metadataResults[index]?.tags || [],
+  }));
 
   return NextResponse.json({ events: enriched });
 }
