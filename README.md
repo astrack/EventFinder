@@ -50,7 +50,7 @@ cp .env.example .env
 - `EVENTBRITE_TOKEN` – API token for Eventbrite
 - `MEETUP_KEY` – API key for Meetup
 - `TICKETMASTER_KEY` – API key for Ticketmaster
-- `OPENAI_API_KEY` – OpenAI API key used to enrich events
+- `OPENAI_API_KEY` – Optional key for generating AI summaries. Leave empty to skip this step.
 - `NEXT_PUBLIC_STORYBLOK_TOKEN` – Storyblok API token used for content fetching. Required for the Visual Editor so it must be prefixed with `NEXT_PUBLIC_`
 - `NEXT_PUBLIC_BASE_URL` – base URL of your site
 
