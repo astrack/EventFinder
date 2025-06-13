@@ -45,6 +45,12 @@
       "display_name": "Teaser",
       "is_nestable": true,
       "schema": { "headline": { "type": "text" } }
+    },
+    {
+      "name": "feature",
+      "display_name": "Feature",
+      "is_nestable": true,
+      "schema": { "name": { "type": "text" } }
     }
   ]
 }
