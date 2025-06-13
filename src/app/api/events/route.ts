@@ -62,6 +62,7 @@ async function generateEventMetadata(event: FetchedEvent, openai: OpenAI) {
       : event.description?.text || '';
   const title = typeof event.name === 'string' ? event.name : event.name?.text;
   const prompt = `Summarize this event in one sentence and provide a list of relevant tags.\nEvent: ${title}\nDescription: ${description}`;
+
   const response = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
     messages: [{ role: 'user', content: prompt }],
@@ -91,9 +92,14 @@ export async function GET() {
         typeof event.start === 'string' ? event.start : event.start?.local;
       enriched.push({
         id: event.id,
-        title,
+
+        title:
+          typeof event.name === 'string' ? event.name : event.name?.text || '',
         url: event.url,
-        start: start || event.local_date,
+        start:
+          typeof event.start === 'string'
+            ? event.start
+            : event.start?.local || event.local_date,
         venue: event.venue?.name || event._embedded?.venues?.[0]?.name || '',
         summary: metadata.summary,
         tags: metadata.tags,

@@ -1,15 +1,16 @@
-import { storyblokEditable, StoryblokServerComponent } from "@storyblok/react/rsc";
+import {
+  storyblokEditable,
+  StoryblokServerComponent,
+  SbBlokData,
+} from "@storyblok/react/rsc";
+import type { GridBlok } from "@/lib/storyblok-types";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function Grid({ blok }: any) {
+export default function Grid({ blok }: { blok: GridBlok }) {
   return (
     <div {...storyblokEditable(blok)} className="grid gap-6 md:grid-cols-3">
-      {blok.columns?.map(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (nestedBlok: any) => (
-          <StoryblokServerComponent blok={nestedBlok} key={nestedBlok._uid} />
-        )
-      )}
+      {blok.columns?.map((nestedBlok: SbBlokData) => (
+        <StoryblokServerComponent blok={nestedBlok} key={nestedBlok._uid} />
+      ))}
     </div>
   );
 }
