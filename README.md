@@ -48,10 +48,13 @@ cp .env.example .env
 - `TICKETMASTER_KEY` – API key for Ticketmaster
 - `OPENAI_API_KEY` – OpenAI API key used to enrich events
 - `STORYBLOK_TOKEN` – Storyblok API token used for content fetching
+- `OPENAI_CONCURRENT_REQUESTS` – how many metadata requests are sent in parallel (default 5)
 - `NEXT_PUBLIC_BASE_URL` – base URL of your site
 
 ## Events API
 
 The application exposes a `GET /api/events` route that aggregates events from the configured providers and enriches them with a short summary and tags using ChatGPT.
+
+Event enrichment calls OpenAI in small batches defined by `OPENAI_CONCURRENT_REQUESTS`. Adjust this value if you encounter rate limit errors.
 
 Visit `/events` to see the aggregated list rendered in the UI. Each event card displays the AI-generated summary and tags so you can quickly scan for topics of interest.
