@@ -47,6 +47,7 @@ cp .env.example .env
 - `MEETUP_KEY` – API key for Meetup
 - `TICKETMASTER_KEY` – API key for Ticketmaster
 - `OPENAI_API_KEY` – OpenAI API key used to enrich events
+- `STORYBLOK_TOKEN` – Storyblok API token used for content fetching
 - `NEXT_PUBLIC_BASE_URL` – base URL of your site
 
 ## Events API
