@@ -53,4 +53,4 @@ cp .env.example .env
 
 The application exposes a `GET /api/events` route that aggregates events from the configured providers and enriches them with a short summary and tags using ChatGPT.
 
-Visit `/events` to see the aggregated list rendered in the UI.
+Visit `/events` to see the aggregated list rendered in the UI. Each event card displays the AI-generated summary and tags so you can quickly scan for topics of interest.
