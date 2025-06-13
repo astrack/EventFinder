@@ -11,8 +11,13 @@ import Teaser        from "@/storyblok-components/Teaser";
 import Feature       from "@/storyblok-components/Feature";
 
 // storyblokInit RETURNS a getStoryblokApi function ➜ we re-export it
+const accessToken = process.env.STORYBLOK_TOKEN;
+if (!accessToken) {
+  throw new Error("STORYBLOK_TOKEN environment variable is missing");
+}
+
 export const getStoryblokApi = storyblokInit({
-  accessToken: "YSb54AnQcc8czORhorTRVAtt",
+  accessToken,
   use: [apiPlugin],                 // ← plugin really loaded now
   components: {
     navbar: Navbar,
