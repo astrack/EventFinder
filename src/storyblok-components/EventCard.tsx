@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { storyblokEditable } from "@storyblok/react/rsc";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function EventCard({ blok }: any) {
   return (
     <article
