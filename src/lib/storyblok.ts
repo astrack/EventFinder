@@ -16,6 +16,7 @@ import Feature from "@/storyblok-components/Feature";
 
 const accessToken =
   process.env.NEXT_PUBLIC_STORYBLOK_TOKEN ?? process.env.STORYBLOK_TOKEN;
+
 if (!accessToken) {
   throw new Error(
     "NEXT_PUBLIC_STORYBLOK_TOKEN (or STORYBLOK_TOKEN) environment variable is missing",
