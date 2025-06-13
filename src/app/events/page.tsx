@@ -25,14 +25,16 @@ export default async function EventsPage() {
         {events.map(event => (
           <EventCard
             key={event.id}
-            blok={{
-              _uid: event.id,
-              image: { filename: '/placeholder.jpg' },
-              title: event.title,
-              start: event.start,
-              venue: event.venue,
-              price: '',
-            }}
+          blok={{
+            _uid: event.id,
+            image: { filename: '/placeholder.jpg' },
+            title: event.title,
+            start: event.start,
+            venue: event.venue,
+            summary: event.summary,
+            tags: event.tags,
+            price: '',
+          }}
           />
         ))}
       </div>

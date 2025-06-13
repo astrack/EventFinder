@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Configuration, OpenAIApi } from 'openai';
+import OpenAI from 'openai';
 
 // Helper function to fetch events from Eventbrite
 async function fetchEventbriteEvents() {
@@ -55,14 +55,18 @@ interface EnrichedEvent {
   tags: string[];
 }
 
-async function generateEventMetadata(event: FetchedEvent, openai: OpenAIApi) {
-  const description = event.description?.text || event.description || '';
-  const prompt = `Summarize this event in one sentence and provide a list of relevant tags.\nEvent: ${event.name?.text || event.name}\nDescription: ${description}`;
-  const response = await openai.createChatCompletion({
+async function generateEventMetadata(event: FetchedEvent, openai: OpenAI) {
+  const description =
+    typeof event.description === 'string'
+      ? event.description
+      : event.description?.text || '';
+  const title = typeof event.name === 'string' ? event.name : event.name?.text;
+  const prompt = `Summarize this event in one sentence and provide a list of relevant tags.\nEvent: ${title}\nDescription: ${description}`;
+  const response = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
     messages: [{ role: 'user', content: prompt }],
   });
-  const text = response.data.choices[0].message?.content || '';
+  const text = response.choices[0].message?.content || '';
   const [summary, tagsLine] = text.split('\n');
   const tags = tagsLine?.replace('Tags:', '').split(',').map(t => t.trim()).filter(Boolean) || [];
   return { summary, tags };
@@ -76,18 +80,20 @@ export async function GET() {
   ].slice(0, 50); // limit to 50 events
 
   const openaiKey = process.env.OPENAI_API_KEY;
-  const configuration = new Configuration({ apiKey: openaiKey });
-  const openai = new OpenAIApi(configuration);
+  const openai = new OpenAI({ apiKey: openaiKey });
 
   const enriched: EnrichedEvent[] = [];
   for (const event of events as FetchedEvent[]) {
     try {
       const metadata = openaiKey ? await generateEventMetadata(event, openai) : { summary: '', tags: [] };
+      const title = typeof event.name === 'string' ? event.name : event.name?.text || '';
+      const start =
+        typeof event.start === 'string' ? event.start : event.start?.local;
       enriched.push({
         id: event.id,
-        title: event.name?.text || event.name,
+        title,
         url: event.url,
-        start: event.start?.local || event.local_date,
+        start: start || event.local_date,
         venue: event.venue?.name || event._embedded?.venues?.[0]?.name || '',
         summary: metadata.summary,
         tags: metadata.tags,
