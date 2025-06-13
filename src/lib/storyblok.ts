@@ -11,9 +11,12 @@ import Teaser        from "@/storyblok-components/Teaser";
 import Feature       from "@/storyblok-components/Feature";
 
 // storyblokInit RETURNS a getStoryblokApi function ➜ we re-export it
-const accessToken = process.env.STORYBLOK_TOKEN;
+const accessToken =
+  process.env.NEXT_PUBLIC_STORYBLOK_TOKEN || process.env.STORYBLOK_TOKEN;
 if (!accessToken) {
-  throw new Error("STORYBLOK_TOKEN environment variable is missing");
+  throw new Error(
+    "NEXT_PUBLIC_STORYBLOK_TOKEN (or STORYBLOK_TOKEN) environment variable is missing",
+  );
 }
 
 export const getStoryblokApi = storyblokInit({
