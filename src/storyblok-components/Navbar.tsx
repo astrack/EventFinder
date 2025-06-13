@@ -1,8 +1,8 @@
 "use client";
 import { storyblokEditable } from "@storyblok/react/rsc";
+import type { NavbarBlok } from "@/lib/storyblok-types";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function Navbar({ blok }: any) {
+export default function Navbar({ blok }: { blok: NavbarBlok }) {
   return (
     <header
       {...storyblokEditable(blok)}
