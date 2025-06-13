@@ -86,10 +86,9 @@ export async function GET() {
   const enriched: EnrichedEvent[] = [];
   for (const event of events as FetchedEvent[]) {
     try {
-      const metadata = openaiKey ? await generateEventMetadata(event, openai) : { summary: '', tags: [] };
-      const title = typeof event.name === 'string' ? event.name : event.name?.text || '';
-      const start =
-        typeof event.start === 'string' ? event.start : event.start?.local;
+      const metadata = openaiKey
+        ? await generateEventMetadata(event, openai)
+        : { summary: '', tags: [] };
       enriched.push({
         id: event.id,
 
