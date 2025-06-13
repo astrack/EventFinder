@@ -33,6 +33,18 @@
       "display_name": "Page",
       "is_root":  true,
       "schema":   { "body": { "type": "bloks" } }
+    },
+    {
+      "name": "grid",
+      "display_name": "Grid",
+      "is_nestable": true,
+      "schema": { "columns": { "type": "bloks" } }
+    },
+    {
+      "name": "teaser",
+      "display_name": "Teaser",
+      "is_nestable": true,
+      "schema": { "headline": { "type": "text" } }
     }
   ]
 }

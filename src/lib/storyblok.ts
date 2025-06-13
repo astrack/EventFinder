@@ -6,6 +6,8 @@ import Navbar        from "@/storyblok-components/Navbar";
 import EventCard     from "@/storyblok-components/EventCard";
 import FiltersDrawer from "@/storyblok-components/FiltersDrawer";
 import Page          from "@/storyblok-components/Page";
+import Grid          from "@/storyblok-components/Grid";
+import Teaser        from "@/storyblok-components/Teaser";
 
 // storyblokInit RETURNS a getStoryblokApi function ➜ we re-export it
 export const getStoryblokApi = storyblokInit({
@@ -16,6 +18,8 @@ export const getStoryblokApi = storyblokInit({
     event_card: EventCard,
     filters_drawer: FiltersDrawer,
     page: Page,
+    grid: Grid,
+    teaser: Teaser,
   },
 });
 
