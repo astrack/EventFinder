@@ -1,0 +1,38 @@
+{
+  "components": [
+    {
+      "name": "navbar",
+      "display_name": "Navbar",
+      "is_nestable": true,
+      "schema": {}
+    },
+    {
+      "name": "event_card",
+      "display_name": "Event Card",
+      "is_nestable": true,
+      "schema": {
+        "title":      { "type": "text" },
+        "start":      { "type": "datetime" },
+        "venue":      { "type": "text" },
+        "price":      { "type": "text" },
+        "image":      { "type": "asset", "asset_folder_id": 0, "filetypes": ["images"] }
+      }
+    },
+    {
+      "name": "filters_drawer",
+      "display_name": "Filters Drawer",
+      "is_nestable": true,
+      "schema": {
+        "categories": { "type": "multiselect", "source": "internal", "options": ["Music","Family","Sports"] },
+        "price_min":  { "type": "number" },
+        "price_max":  { "type": "number" }
+      }
+    },
+    {
+      "name": "page",
+      "display_name": "Page",
+      "is_root":  true,
+      "schema":   { "body": { "type": "bloks" } }
+    }
+  ]
+}
