@@ -58,3 +58,13 @@ The application exposes a `GET /api/events` route that aggregates events from th
 Event enrichment calls OpenAI in small batches defined by `OPENAI_CONCURRENT_REQUESTS`. Adjust this value if you encounter rate limit errors.
 
 Visit `/events` to see the aggregated list rendered in the UI. Each event card displays the AI-generated summary and tags so you can quickly scan for topics of interest.
+
+## Testing
+
+Run the unit tests with:
+
+```bash
+npm test
+```
+
+Vitest will execute API and component tests located in the `tests` directory.
