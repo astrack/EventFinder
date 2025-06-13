@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
+import {OpenAI} from 'openai';
 
 // Helper function to fetch events from Eventbrite
 async function fetchEventbriteEvents() {
