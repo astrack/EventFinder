@@ -1,35 +1,45 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-// Helper function to fetch events from Eventbrite
 async function fetchEventbriteEvents() {
   const token = process.env.EVENTBRITE_TOKEN;
   if (!token) return [];
-  const res = await fetch('https://www.eventbriteapi.com/v3/events/search/?location.address=online', {
-    headers: { Authorization: `Bearer ${token}` },
-    next: { revalidate: 60 * 15 },
-  });
+
+  const res = await fetch(
+    'https://www.eventbriteapi.com/v3/events/search/?location.address=online',
+    {
+      headers: { Authorization: `Bearer ${token}` },
+      next: { revalidate: 60 * 15 },
+    },
+  );
   if (!res.ok) return [];
+
   const data = await res.json();
   return data.events || [];
 }
 
-// Helper function to fetch events from Meetup
 async function fetchMeetupEvents() {
   const key = process.env.MEETUP_KEY;
   if (!key) return [];
-  const res = await fetch(`https://api.meetup.com/find/upcoming_events?&sign=true&key=${key}`);
+
+  const res = await fetch(
+    `https://api.meetup.com/find/upcoming_events?&sign=true&key=${key}`,
+  );
   if (!res.ok) return [];
+
   const data = await res.json();
   return data.events || [];
 }
 
-// Helper function to fetch events from Ticketmaster
 async function fetchTicketmasterEvents() {
   const key = process.env.TICKETMASTER_KEY;
   if (!key) return [];
-  const res = await fetch(`https://app.ticketmaster.com/discovery/v2/events.json?apikey=${key}`);
+
+  const res = await fetch(
+    `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${key}`,
+  );
   if (!res.ok) return [];
+
   const data = await res.json();
   return data._embedded?.events || [];
 }
@@ -55,55 +65,82 @@ interface EnrichedEvent {
   tags: string[];
 }
 
+const MAX_CONCURRENT_OPENAI_REQUESTS = parseInt(
+  process.env.OPENAI_CONCURRENT_REQUESTS || '5',
+  10,
+);
+
 async function generateEventMetadata(event: FetchedEvent, openai: OpenAI) {
-  const description =
-    typeof event.description === 'string'
-      ? event.description
-      : event.description?.text || '';
-  const eventName =
-    typeof event.name === 'string' ? event.name : event.name?.text || '';
-  const prompt = `Summarize this event in one sentence and provide a list of relevant tags.\nEvent: ${eventName}\nDescription: ${description}`;
+  const description = event.description?.text || (event.description as string) || '';
+  const prompt = `Summarize this event in one sentence and provide a list of relevant tags.\nEvent: ${
+    typeof event.name === 'string' ? event.name : event.name?.text
+  }\nDescription: ${description}`;
+
   const response = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
     messages: [{ role: 'user', content: prompt }],
   });
+
   const text = response.choices[0].message?.content || '';
-  const [summary, tagsLine] = text.split('\n');
-  const tags = tagsLine?.replace('Tags:', '').split(',').map(t => t.trim()).filter(Boolean) || [];
-  return { summary, tags };
+  const [summaryLine = '', tagsLine = ''] = text.split('\n');
+  const tags =
+    tagsLine
+      .replace(/tags?:/i, '')
+      .split(',')
+      .map(t => t.trim())
+      .filter(Boolean) || [];
+
+  return { summary: summaryLine.trim(), tags };
 }
 
 export async function GET() {
-  const events = [
+  /* 4-a. Aggregate raw events */
+  const rawEvents: FetchedEvent[] = [
     ...(await fetchEventbriteEvents()),
     ...(await fetchMeetupEvents()),
     ...(await fetchTicketmasterEvents()),
-  ].slice(0, 50); // limit to 50 events
+  ].slice(0, 50);
 
+  /* 4-b. Prepare OpenAI helper (if key provided) */
   const openaiKey = process.env.OPENAI_API_KEY;
-  const openai = new OpenAI({ apiKey: openaiKey });
+  const openai = openaiKey ? new OpenAI({ apiKey: openaiKey }) : null;
 
-  const enriched: EnrichedEvent[] = [];
-  for (const event of events as FetchedEvent[]) {
-    try {
-      const metadata = openaiKey ? await generateEventMetadata(event, openai) : { summary: '', tags: [] };
-      enriched.push({
-        id: event.id,
-        title:
-          typeof event.name === 'string' ? event.name : event.name?.text || '',
-        url: event.url,
-        start:
-          typeof event.start === 'string'
-            ? event.start
-            : event.start?.local || event.local_date,
-        venue: event.venue?.name || event._embedded?.venues?.[0]?.name || '',
-        summary: metadata.summary,
-        tags: metadata.tags,
-      });
-    } catch (err) {
-      console.error(err);
-    }
+  /* 4-c. Batch-process metadata with concurrency limit */
+  const metadataResults: { summary: string; tags: string[] }[] = [];
+
+  for (let i = 0; i < rawEvents.length; i += MAX_CONCURRENT_OPENAI_REQUESTS) {
+    const batch = rawEvents.slice(i, i + MAX_CONCURRENT_OPENAI_REQUESTS);
+
+    const promises = batch.map(ev =>
+      openai
+        ? generateEventMetadata(ev, openai)
+        : Promise.resolve({ summary: '', tags: [] }),
+    );
+
+    const results = await Promise.allSettled(promises);
+
+    results.forEach(result => {
+      if (result.status === 'fulfilled') {
+        metadataResults.push(result.value);
+      } else {
+        console.error('OpenAI error:', result.reason);
+        metadataResults.push({ summary: '', tags: [] });
+      }
+    });
   }
+
+  const enriched: EnrichedEvent[] = rawEvents.map((event, idx) => ({
+    id: event.id,
+    title: typeof event.name === 'string' ? event.name : event.name?.text || '',
+    url: event.url,
+    start:
+      typeof event.start === 'string'
+        ? event.start
+        : event.start?.local || event.local_date,
+    venue: event.venue?.name || event._embedded?.venues?.[0]?.name || '',
+    summary: metadataResults[idx]?.summary || '',
+    tags: metadataResults[idx]?.tags || [],
+  }));
 
   return NextResponse.json({ events: enriched });
 }
