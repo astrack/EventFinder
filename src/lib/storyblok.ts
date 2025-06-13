@@ -8,6 +8,7 @@ import FiltersDrawer from "@/storyblok-components/FiltersDrawer";
 import Page          from "@/storyblok-components/Page";
 import Grid          from "@/storyblok-components/Grid";
 import Teaser        from "@/storyblok-components/Teaser";
+import Feature       from "@/storyblok-components/Feature";
 
 // storyblokInit RETURNS a getStoryblokApi function ➜ we re-export it
 export const getStoryblokApi = storyblokInit({
@@ -20,6 +21,7 @@ export const getStoryblokApi = storyblokInit({
     page: Page,
     grid: Grid,
     teaser: Teaser,
+    feature: Feature,
   },
 });
 
