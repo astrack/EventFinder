@@ -34,3 +34,23 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Environment variables
+
+Copy `.env.example` to `.env` and fill in the tokens for the external APIs you want to use:
+
+```
+cp .env.example .env
+```
+
+- `EVENTBRITE_TOKEN` – API token for Eventbrite
+- `MEETUP_KEY` – API key for Meetup
+- `TICKETMASTER_KEY` – API key for Ticketmaster
+- `OPENAI_API_KEY` – OpenAI API key used to enrich events
+- `NEXT_PUBLIC_BASE_URL` – base URL of your site
+
+## Events API
+
+The application exposes a `GET /api/events` route that aggregates events from the configured providers and enriches them with a short summary and tags using ChatGPT.
+
+Visit `/events` to see the aggregated list rendered in the UI.
