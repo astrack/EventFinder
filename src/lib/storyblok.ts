@@ -1,27 +1,31 @@
-// Storyblok initialisation (runs ONCE, server side)
-import { apiPlugin, storyblokInit } from "@storyblok/react/rsc";
+// Storyblok initialization (runs once on the server)
+import {
+  apiPlugin,
+  storyblokInit,
+  getStoryblokApi,
+  StoryblokStory,
+} from "@storyblok/react/rsc";
 
-// 🔗 map your blok components
-import Navbar        from "@/storyblok-components/Navbar";
-import EventCard     from "@/storyblok-components/EventCard";
+import Navbar from "@/storyblok-components/Navbar";
+import EventCard from "@/storyblok-components/EventCard";
 import FiltersDrawer from "@/storyblok-components/FiltersDrawer";
-import Page          from "@/storyblok-components/Page";
-import Grid          from "@/storyblok-components/Grid";
-import Teaser        from "@/storyblok-components/Teaser";
-import Feature       from "@/storyblok-components/Feature";
+import Page from "@/storyblok-components/Page";
+import Grid from "@/storyblok-components/Grid";
+import Teaser from "@/storyblok-components/Teaser";
+import Feature from "@/storyblok-components/Feature";
 
-// storyblokInit RETURNS a getStoryblokApi function ➜ we re-export it
 const accessToken =
-  process.env.NEXT_PUBLIC_STORYBLOK_TOKEN || process.env.STORYBLOK_TOKEN;
+  process.env.NEXT_PUBLIC_STORYBLOK_TOKEN ?? process.env.STORYBLOK_TOKEN;
+
 if (!accessToken) {
   throw new Error(
     "NEXT_PUBLIC_STORYBLOK_TOKEN (or STORYBLOK_TOKEN) environment variable is missing",
   );
 }
 
-export const getStoryblokApi = storyblokInit({
+storyblokInit({
   accessToken,
-  use: [apiPlugin],                 // ← plugin really loaded now
+  use: [apiPlugin],
   components: {
     navbar: Navbar,
     event_card: EventCard,
@@ -33,5 +37,4 @@ export const getStoryblokApi = storyblokInit({
   },
 });
 
-// Server-side renderer for stories
-export { StoryblokStory } from "@storyblok/react/rsc";
+export { getStoryblokApi, StoryblokStory };
