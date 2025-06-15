@@ -51,6 +51,7 @@ cp .env.example .env
 - `MEETUP_KEY` – API key for Meetup
 - `TICKETMASTER_KEY` – API key for Ticketmaster
 - `OPENAI_API_KEY` – OpenAI API key used to enrich events
+- `OPENAI_MAX_EVENTS` – maximum number of events to enrich with OpenAI per request (default 3)
 - `NEXT_PUBLIC_STORYBLOK_TOKEN` – Storyblok API token used for content fetching. Required for the Visual Editor so it must be prefixed with `NEXT_PUBLIC_`
 - `NEXT_PUBLIC_BASE_URL` – base URL of your site
 
@@ -59,3 +60,6 @@ cp .env.example .env
 The application exposes a `GET /api/events` route that aggregates events from the configured providers and enriches them with a short summary and tags using ChatGPT.
 
 Visit `/events` to see the aggregated list rendered in the UI. Each event card displays the AI-generated summary and tags so you can quickly scan for topics of interest.
+
+By default only the first few events are enriched via OpenAI to avoid hitting
+the free tier rate limit. Adjust `OPENAI_MAX_EVENTS` if you have a higher quota.

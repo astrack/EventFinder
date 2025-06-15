@@ -82,13 +82,17 @@ export async function GET() {
 
   const openaiKey = process.env.OPENAI_API_KEY;
   const openai = new OpenAI({ apiKey: openaiKey });
+  const maxOpenAIEvents = parseInt(process.env.OPENAI_MAX_EVENTS || '3', 10);
+  let openAIRequests = 0;
 
   const enriched: EnrichedEvent[] = [];
   for (const event of events as FetchedEvent[]) {
     try {
-      const metadata = openaiKey
+      const shouldEnrich = openaiKey && openAIRequests < maxOpenAIEvents;
+      const metadata = shouldEnrich
         ? await generateEventMetadata(event, openai)
         : { summary: '', tags: [] };
+      if (shouldEnrich) openAIRequests++;
       enriched.push({
         id: event.id,
 
