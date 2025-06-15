@@ -18,7 +18,7 @@ export default function SearchBar({ blok, onSearch }: { blok: SearchBarBlok; onS
         value={query}
         onChange={handleChange}
         placeholder={blok.placeholder || "Search"}
-        className="w-full h-9 rounded-md border px-3 text-sm focus:outline-none"
+        className="glass w-full h-9 rounded-md px-3 text-sm focus:outline-none"
       />
     </div>
   );

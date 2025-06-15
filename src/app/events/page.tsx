@@ -6,6 +6,7 @@ interface ApiEvent {
   url: string;
   start: string;
   venue: string;
+  image?: string;
   summary: string;
   tags: string[];
 }
