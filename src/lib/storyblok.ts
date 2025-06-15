@@ -13,6 +13,7 @@ import Page from "@/storyblok-components/Page";
 import Grid from "@/storyblok-components/Grid";
 import Teaser from "@/storyblok-components/Teaser";
 import Feature from "@/storyblok-components/Feature";
+import SearchBar from "@/storyblok-components/SearchBar";
 
 const accessToken =
   process.env.NEXT_PUBLIC_STORYBLOK_TOKEN ?? process.env.STORYBLOK_TOKEN;
@@ -34,6 +35,7 @@ storyblokInit({
     grid: Grid,
     teaser: Teaser,
     feature: Feature,
+    search_bar: SearchBar,
   },
 });
 

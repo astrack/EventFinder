@@ -9,7 +9,7 @@ export default function EventCard({ blok }: { blok: EventCardBlok }) {
       className="w-80 rounded-xl overflow-hidden shadow transition hover:shadow-lg"
     >
       <Image
-        src={blok.image.filename ?? `/placeholder.jpg`}
+        src={blok.image.filename ?? `/placeholder.svg`}
         alt={blok.title}
         width={320}
         height={160}
