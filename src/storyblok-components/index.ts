@@ -5,4 +5,5 @@ export { default as Page } from "./Page";
 export { default as Grid } from "./Grid";
 export { default as Teaser } from "./Teaser";
 export { default as Feature } from "./Feature";
+export { default as SearchBar } from "./SearchBar";
 

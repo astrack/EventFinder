@@ -12,6 +12,10 @@ export interface EventCardBlok extends SbBlokData {
 
 export type NavbarBlok = SbBlokData;
 
+export interface SearchBarBlok extends SbBlokData {
+  placeholder?: string;
+}
+
 export interface FiltersDrawerBlok extends SbBlokData {
   categories?: string[];
   price_min?: number;

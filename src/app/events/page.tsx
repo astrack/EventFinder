@@ -1,4 +1,4 @@
-import EventCard from '@/storyblok-components/EventCard';
+import EventsSearch from '@/components/EventsSearch';
 
 interface ApiEvent {
   id: string;
@@ -21,23 +21,7 @@ export default async function EventsPage() {
   return (
     <div className="space-y-6 p-6">
       <h1 className="text-2xl font-semibold">Upcoming Events</h1>
-      <div className="grid gap-6 md:grid-cols-3">
-        {events.map(event => (
-          <EventCard
-            key={event.id}
-          blok={{
-            _uid: event.id,
-            image: { filename: '/placeholder.jpg' },
-            title: event.title,
-            start: event.start,
-            venue: event.venue,
-            summary: event.summary,
-            tags: event.tags,
-            price: '',
-          }}
-          />
-        ))}
-      </div>
+      <EventsSearch events={events} />
     </div>
   );
 }
