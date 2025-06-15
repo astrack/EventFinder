@@ -1,12 +1,35 @@
+"use client";
 import Image from "next/image";
 import { storyblokEditable } from "@storyblok/react/rsc";
+import { useEffect, useState } from "react";
 import type { EventCardBlok } from "@/lib/storyblok-types";
 
 export default function EventCard({ blok }: { blok: EventCardBlok }) {
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem("savedEvents") || "[]");
+    setSaved(stored.some((e: EventCardBlok) => e._uid === blok._uid));
+  }, [blok._uid]);
+
+  function toggleSaved(e: React.MouseEvent) {
+    e.stopPropagation();
+    const stored = JSON.parse(localStorage.getItem("savedEvents") || "[]");
+    if (saved) {
+      const next = stored.filter((e: EventCardBlok) => e._uid !== blok._uid);
+      localStorage.setItem("savedEvents", JSON.stringify(next));
+      setSaved(false);
+    } else {
+      stored.push(blok);
+      localStorage.setItem("savedEvents", JSON.stringify(stored));
+      setSaved(true);
+    }
+  }
+
   return (
     <article
       {...storyblokEditable(blok)}
-      className="w-80 rounded-xl overflow-hidden shadow transition hover:shadow-lg"
+      className="w-80 rounded-xl overflow-hidden shadow transition hover:shadow-lg bg-white dark:bg-gray-800 cursor-pointer"
     >
       <Image
         src={blok.image.filename ?? `/placeholder.svg`}
@@ -15,7 +38,20 @@ export default function EventCard({ blok }: { blok: EventCardBlok }) {
         height={160}
         className="object-cover h-40 w-full"
       />
-      <div className="p-4 space-y-1">
+      <div className="p-4 space-y-1 relative">
+        <button
+          onClick={toggleSaved}
+          aria-label="Save event"
+          className="absolute top-2 right-2 text-white"
+        >
+          <span
+            className={
+              saved
+                ? "i-lucide-bookmark w-5 h-5"
+                : "i-lucide-bookmark w-5 h-5 opacity-50"
+            }
+          />
+        </button>
         <span className="text-xs text-slate-500">{blok.start}</span>
         <h3 className="text-lg font-medium">{blok.title}</h3>
         <p className="text-sm text-slate-600">{blok.venue}</p>
