@@ -18,25 +18,21 @@ import SearchBar from "@/storyblok-components/SearchBar";
 const accessToken =
   process.env.NEXT_PUBLIC_STORYBLOK_TOKEN ?? process.env.STORYBLOK_TOKEN;
 
-if (!accessToken) {
-  throw new Error(
-    "NEXT_PUBLIC_STORYBLOK_TOKEN (or STORYBLOK_TOKEN) environment variable is missing",
-  );
+if (accessToken) {
+  storyblokInit({
+    accessToken,
+    use: [apiPlugin],
+    components: {
+      navbar: Navbar,
+      event_card: EventCard,
+      filters_drawer: FiltersDrawer,
+      page: Page,
+      grid: Grid,
+      teaser: Teaser,
+      feature: Feature,
+      search_bar: SearchBar,
+    },
+  });
 }
-
-storyblokInit({
-  accessToken,
-  use: [apiPlugin],
-  components: {
-    navbar: Navbar,
-    event_card: EventCard,
-    filters_drawer: FiltersDrawer,
-    page: Page,
-    grid: Grid,
-    teaser: Teaser,
-    feature: Feature,
-    search_bar: SearchBar,
-  },
-});
 
 export { getStoryblokApi, StoryblokStory };

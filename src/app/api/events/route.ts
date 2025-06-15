@@ -43,6 +43,9 @@ interface FetchedEvent {
   local_date?: string;
   venue?: { name?: string };
   _embedded?: { venues?: { name?: string }[] };
+  logo?: { url?: string; original?: { url?: string } };
+  featured_photo?: { photo_link?: string; highres_link?: string };
+  images?: { url?: string }[];
 }
 
 interface EnrichedEvent {
@@ -51,6 +54,7 @@ interface EnrichedEvent {
   url?: string;
   start?: string;
   venue?: string;
+  image?: string;
   summary: string;
   tags: string[];
 }
@@ -104,6 +108,16 @@ export async function GET() {
             ? event.start
             : event.start?.local || event.local_date,
         venue: event.venue?.name || event._embedded?.venues?.[0]?.name || '',
+        image:
+          // Eventbrite
+          event.logo?.original?.url ||
+          event.logo?.url ||
+          // Meetup
+          event.featured_photo?.highres_link ||
+          event.featured_photo?.photo_link ||
+          // Ticketmaster
+          event.images?.[0]?.url ||
+          '',
         summary: metadata.summary,
         tags: metadata.tags,
       });
